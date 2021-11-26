@@ -1,0 +1,10 @@
+﻿id,computer_name,owner,location_department,aquisition_date,cpu,ram,disk_size
+1,AIO1,Mohamed,Administration,01-01-18,I3,4GB,200GB
+2,AIO2,Mmar,Administration,02-01-18,I3,4GB,200GB
+3,AIO3,Othman,Administration,03-01-18,I3,4GB,200GB
+4,AIO4,Abubakar,Administration,04-01-18,I3,4GB,200GB
+5,AIO5,Nadir,Communication,05-01-18,I3,4GB,200GB
+6,Laptop1,Sofiane,Finance,05-06-20,I3,4GB,200GB
+7,Laptop2,Ilies,IT,06-06-20,Ryzen5,16GB,1TB
+8,Laptop3,Islam,IT,07-06-20,Ryzen5,16GB,1TB
+9,SERVER,none,IT,01-01-21,Xeon,128GB,64TB
