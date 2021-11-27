@@ -1,6 +1,6 @@
 ﻿id,computer_name,owner,location_department,aquisition_date,cpu,ram,disk_size
 1,AIO1,Mohamed,Administration,01-01-18,I3,4GB,200GB
-2,AIO2,Mmar,Administration,02-01-18,I3,4GB,200GB
+2,AIO2,Omar,Administration,02-01-18,I3,4GB,200GB
 3,AIO3,Othman,Administration,03-01-18,I3,4GB,200GB
 4,AIO4,Abubakar,Administration,04-01-18,I3,4GB,200GB
 5,AIO5,Nadir,Communication,05-01-18,I3,4GB,200GB

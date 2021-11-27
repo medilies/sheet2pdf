@@ -5,6 +5,7 @@ h4,
 h5,
 h6,
 p,
+hr,
 div {
     padding: 0;
     margin: 0;
@@ -26,6 +27,13 @@ p {
     margin: 4px;
 }
 
-hr {
+/* hr {
     margin: 16px 0;
+} */
+
+.mt1 {
+    margin-top: 8px;
+}
+.mb1 {
+    margin-bottom: 8px;
 }
