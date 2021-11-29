@@ -5,8 +5,8 @@ namespace Src;
 use Exception;
 use \splitbrain\phpcli\PSR3CLI as splitbrainphpcli;
 use \splitbrain\phpcli\Options;
-
-use Src\Csv2Pdf;
+use \Src\Spreadsheet;
+use Src\Pdf;
 
 /**
  * @author Boudouma Mohamed Ilies <medilies.contact@gmail.com>
@@ -42,18 +42,18 @@ class Cli extends splitbrainphpcli
      */
     protected function setup(Options $options)
     {
-        $options->setHelp('Generate PDFs with intresting visuals from a CSV');
+        $options->setHelp('Generate PDFs with intresting visuals from a spreadsheet');
         $options->registerOption('version', 'Print version', 'v');
 
-        $options->registerArgument('data-source', 'The CSV file that contains the data rows' . PHP_EOL . 'Or the folder that contains the CSV files', true);
-        $options->registerOption('csv', 'The data source is a CSV file', 'c');
-        $options->registerOption('folder', '[not supported yet] The data source is a folder of CSV files', 'f'); // no supported yet
+        $options->registerArgument('data-source', 'The file that contains the data rows' . PHP_EOL . 'Or the folder that contains the files', true);
+        $options->registerOption('file', 'The data source is a spreadsheet file', 'f');
+        $options->registerOption('dir', '[not supported yet] The data source is a folder of spreadsheet files', 'd'); // no supported yet
 
         $options->registerArgument('template', 'The HTML template to use' . PHP_EOL . 'The prgram expects a stylesheet (.css) with same name and in the same folder', true);
         // $options->registerOption('style', 'The stylesheet', 's', true);
 
         $options->registerArgument('records-per-page', 'Max number of data rows to render per page', true);
-        $options->registerOption('output', 'Relative or absolute path to where to output the PDF' . PHP_EOL . 'If not specified, the same location of the CSV(s) will be used', 'o', "folder");
+        $options->registerOption('output', 'Relative or absolute path to where to output the PDF' . PHP_EOL . 'If not specified, the same location of the spreadsheet(s) will be used', 'o', "folder");
     }
 
     protected function main(Options $options)
@@ -69,23 +69,25 @@ class Cli extends splitbrainphpcli
         $args = $options->getArgs();
         // Getting absolute paths OR throw exception
         $this->data_source = $this->getRealPathIfExist($args[0]);
-        Csv2Pdf::$template_html_path = $this->getRealPathIfExist($args[1]);
-        Csv2Pdf::$template_css_path = $this->getRealPathIfExist(str_replace('html', 'css', Csv2Pdf::$template_html_path));
+        Pdf::$template_html_path = $this->getRealPathIfExist($args[1]);
+        Pdf::$template_css_path = $this->getRealPathIfExist(str_replace('html', 'css', Pdf::$template_html_path));
         // From now on all paths are aboslute and exist
-        Csv2Pdf::$max_cards_per_page = $args[2];
+        Pdf::$max_cards_per_page = $args[2];
 
         $this->input_type = $this->inputIsFileOrFolder($options);
 
-        Csv2Pdf::$output_folder = $this->setOutputFolder($options->getOpt('output'), $this->input_type, $this->data_source);
+        Pdf::$output_folder = $this->setOutputFolder($options->getOpt('output'), $this->input_type, $this->data_source);
 
         switch ($this->input_type) {
             case self::INPUT_IS_FILE:
                 // 
+                $spreadsheet = new Spreadsheet($this->data_source);
                 $csv_file_path = $this->data_source;
                 $pdf_file_name = $this->setPdfNameFromCsv($csv_file_path);
 
-                new Csv2Pdf(
-                    $csv_file_path,
+                new Pdf(
+                    $spreadsheet->getAssoc(),
+                    $spreadsheet->getFields(),
                     $pdf_file_name,
                 );
                 break;
@@ -123,17 +125,17 @@ class Cli extends splitbrainphpcli
      */
     protected function inputIsFileOrFolder(Options $options)
     {
-        if ($options->getOpt('csv') && $options->getOpt('folder')) {
-            throw new \Exception("--file and --csv options cannot be set together. Pick only one!");
+        if ($options->getOpt('file') && $options->getOpt('dir')) {
+            throw new \Exception("--file and --dir options cannot be set together. Pick only one!");
         }
 
-        if ($options->getOpt('csv')) {
+        if ($options->getOpt('file')) {
             return self::INPUT_IS_FILE;
-        } elseif ($options->getOpt('folder')) {
+        } elseif ($options->getOpt('dir')) {
             return self::INPUT_IS_FOLDER;
         }
 
-        throw new \Exception("The type of data-source --folder or --csv option must be specified");
+        throw new \Exception("The type of data-source --file or --dir option must be specified");
     }
 
     /**
@@ -156,7 +158,7 @@ class Cli extends splitbrainphpcli
             if ($this->isValidPath($output_option, 'dir')) {
                 return realpath($output_option);
             } else {
-                throw new \Exception("Invalid folder <$output_option> specified within the -o options");
+                throw new \Exception("Invalid folder <$output_option> specified within the -o option");
             }
         }
 
@@ -164,14 +166,14 @@ class Cli extends splitbrainphpcli
         switch ($input_type) {
             case self::INPUT_IS_FILE:
                 if (!$this->isValidPath($data_source, 'csv')) {
-                    throw new \Exception("Invalid CSV <$data_source> specified within the -c options");
+                    throw new \Exception("Invalid CSV <$data_source> specified within the -f option");
                 } else {
                     return dirname($data_source);
                 }
 
             case self::INPUT_IS_FOLDER:
                 if (!$this->isValidPath($data_source, 'dir')) {
-                    throw new \Exception("Invalid folder <$data_source> specified within the -f options");
+                    throw new \Exception("Invalid folder <$data_source> specified within the -d option");
                 } else {
                     return $data_source;
                 }
