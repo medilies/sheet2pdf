@@ -71,7 +71,7 @@ class Cli extends splitbrainphpcli
         $this->data_source = $this->getRealPathIfExist($args[0]);
         Pdf::$template_html_path = $this->getRealPathIfExist($args[1]);
         Pdf::$template_css_path = $this->getRealPathIfExist(str_replace('html', 'css', Pdf::$template_html_path));
-        // From now on all paths are aboslute and exist
+        // From now on all paths are aboslute and exist - except -o if set
         Pdf::$max_cards_per_page = $args[2];
 
         $this->input_type = $this->inputIsFileOrFolder($options);
@@ -145,87 +145,40 @@ class Cli extends splitbrainphpcli
      *
      * @param int $input_type
      *
-     * @param string $data_source
-     * MUST be a valid **CSV file** path or a **folder** path
+     * @param string $data_source_real_path
+     * MUST be a valid **spreadsheet file** path or a **folder** path
      *
      * @return string
      * absolute folder path
      */
-    protected function setOutputFolder($output_option, int $input_type, string $data_source)
+    protected function setOutputFolder(string|false $output_option, int $input_type, string $data_source_real_path)
     {
         // User specified a -o option
         if ($output_option) {
-            if ($this->isValidPath($output_option, 'dir')) {
-                return realpath($output_option);
+
+            $output_option = $this->getRealPathIfExist($output_option);
+
+            if ($this->isDir($output_option)) {
+                return $output_option;
             } else {
-                throw new \Exception("Invalid folder <$output_option> specified within the -o option");
+                throw new \Exception("<$output_option> specified within the -o option is not a valid folder");
             }
         }
 
 
         switch ($input_type) {
             case self::INPUT_IS_FILE:
-                if (!$this->isValidPath($data_source, 'csv')) {
-                    throw new \Exception("Invalid CSV <$data_source> specified within the -f option");
-                } else {
-                    return dirname($data_source);
-                }
+                return dirname($data_source_real_path);
 
             case self::INPUT_IS_FOLDER:
-                if (!$this->isValidPath($data_source, 'dir')) {
-                    throw new \Exception("Invalid folder <$data_source> specified within the -d option");
+                if ($this->isDir($data_source_real_path)) {
+                    return $data_source_real_path;
                 } else {
-                    return $data_source;
+                    throw new \Exception("Invalid folder <$data_source_real_path> specified within the -d option");
                 }
         }
 
-        throw new \Exception("Unexpected behaviour while retrieving output location");
-    }
-
-    /**
-     * Compares the path against the expected file type (extension)
-     * 
-     * @param string $real_path
-     * A file that surely exist
-     *
-     * @param 'dir'|'csv'|'html' $file_type
-     * The file extension to validate against
-     * 
-     * @return bool
-     * @throws \Exception
-     * When validation do not pass
-     */
-    protected function isValidPath(string $real_path, string $file_type)
-    {
-        $real_path = $this->getRealPathIfExist($real_path);
-
-        switch ($file_type) {
-            case 'dir':
-                if (is_dir($real_path)) {
-                    return true;
-                } else {
-                    return false;
-                }
-                break;
-            case 'csv':
-                if (strcasecmp(pathinfo($real_path)['extension'], 'csv') === 0) {
-                    return true;
-                } else {
-                    return false;
-                }
-                break;
-            case 'html':
-                if (strcasecmp(pathinfo($real_path)['extension'], 'html') === 0) {
-                    return true;
-                } else {
-                    return false;
-                }
-                break;
-            default:
-                throw new \Exception("Unexpected file type: $file_type");
-        }
-
-        throw new \Exception("Undexpected behaviour while validatiiing the path $real_path");
+        throw new \Exception("Unexpected behaviour while setting the output location");
     }
 
     /**
@@ -251,5 +204,29 @@ class Cli extends splitbrainphpcli
         }
 
         return $real_path;
+    }
+
+    protected function getFileExtension(string $real_path)
+    {
+        return pathinfo($real_path)['extension'];
+    }
+
+    protected function isDir(string $real_path): bool
+    {
+        if (is_dir($real_path)) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    protected function isHtml(string $real_path)
+    {
+        return strcasecmp($this->getFileExtension($real_path), 'html') === 0;
+    }
+
+    protected function isCsv(string $real_path)
+    {
+        return strcasecmp($this->getFileExtension($real_path), 'csv') === 0;
     }
 }
