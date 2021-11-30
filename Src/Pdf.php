@@ -5,6 +5,8 @@ namespace Src;
 use \Mpdf\Mpdf;
 
 /**
+ * Manages all what is related with the PDFs
+ * 
  * @author Boudouma Mohamed Ilies <medilies.contact@gmail.com>
  */
 class Pdf
