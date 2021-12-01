@@ -1,22 +1,26 @@
-# CSV2PDF
+# SHEET2PDF
+
+Supports **.csv**, **.xlsx** and **.ods** spreadsheet files.
 
 ## Env setup
 
-1. Enable the `gd` extension in `php.ini`
+1. Enable the `gd` and `mbstring` extensions for the [**mPDF** library](https://mpdf.github.io/about-mpdf/requirements-v7.html).
 
-2. Run:
+2. [May be optional] Other requirements for the **PhpSpreadsheet** library can be found [here](https://github.com/PHPOffice/PhpSpreadsheet/blob/d5825a66822ce97d7d71478130b2f2b80f01a509/composer.json#L54) .
+
+3. [May be optional] Run:
 
     ```text
     composer install
     ```
 
-    (Can be optional if the vendor file is already present).
+    (Optional if the vendor file is already present).
 
 ## Usage example
 
-In the following example we have a sheet which contains a computers inventory. We need to create and print little cards to stick them in the back of each computer.
+In the following example we have a spreadsheet which contains a computers inventory. We need to create and print little cards to stick them in the back of each computer.
 
-1. The CSV inventory sheet is `example_data.csv`:
+1. The inventory sheet is `example_data.csv`:
 
     | id  | computer_name | owner    | location_department | aquisition_date | cpu    | ram   | disk_size |
     | --- | ------------- | -------- | ------------------- | --------------- | ------ | ----- | --------- |
@@ -82,10 +86,9 @@ In the following example we have a sheet which contains a computers inventory. W
 5. Generate the PDF with:
 
     ```text
-    php .\csv2pdf.php -c .\example\example_data.csv .\example\example.html 2
+    php .\sheet2pdf.php .\example\example_data.csv .\example\example.html 2
     ```
 
-    - The **-c** option tells the program that we are inputing a single CSV file.
     - A **-o** option is omitted, so the PDF will be outputed next the CSV file, otherwise the PDF will be outputed in the specified location.
     - The first argument **.\example\example_data.csv** is the relative path to the data source.
     - The second argument **.\example\example.html** is the relative path to the template.
@@ -97,16 +100,17 @@ In the following example we have a sheet which contains a computers inventory. W
 
 ## NOTE
 
-1. Knowing the library **MPDF** can help you customize the source code of this project to suit you better.
-2. You may find that the **MPDF** library is limited when it comes to trasnlating crazy styled HTML and it is the case with other alternative PHP libraries (**Fpdf**, **DOMpdf** ...), for example you cannot output PDFs with _flex_ or _grid_ displays.
+1. Knowing the library **mPDF** can help you customize the source code of this project to suit you better.
+2. You may find that the **mPDF** library is limited when it comes to trasnlating crazy styled HTML and it is the case with other alternative PHP libraries (**Fpdf**, **DOMpdf** ...), for example you cannot output PDFs with _flex_ or _grid_ displays.
 
 ## BUGS
 
-One white space is being prepended the first key of the CSV when parsing it!
+~~One white space is being prepended the first key of the CSV when parsing it!~~
+
+-   Fixed by using the **PhpSpreadsheet** library instead of [the custom CSV parser](https://github.com/medilies/sheet2pdf/commit/536978593a4fa6ec28b265f0c19526a7363021ec#diff-9aaba009e17d6fe971f53cd683e9e617e9bcbf94d7e053ed0d60480d27c2d7baL73)
 
 ## TODO
 
--   Support inputing folders of CSVs with the option **-f**
 -   Extend the `%VAR_%` feature. For exmaple:
     -   `%UPPER_str%` will apply `strtoupper()` on `str`.
     -   `%DATE_date:FORMAT%` will allow formating date.
