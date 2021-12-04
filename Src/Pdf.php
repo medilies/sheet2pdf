@@ -2,9 +2,11 @@
 
 namespace Src;
 
-use \Mpdf\Mpdf;
+use \Mpdf\Mpdf as PdfMaker;
 
 /**
+ * mPDF library wrapper
+ * 
  * Manages all what is related with the PDFs
  * 
  * @author Boudouma Mohamed Ilies <medilies.contact@gmail.com>
@@ -45,7 +47,7 @@ class Pdf
     //********************************************* */
     //          Instance (This pdf) properties
     //********************************************* */
-    protected $csv_file;
+    protected $data_table;
     protected $fields;
     protected $number_of_rows;
 
@@ -53,15 +55,16 @@ class Pdf
 
     protected $pdf;
 
-    function __construct(array $csv_file, array $fields, string $pdf_name)
+    function __construct(array $data_table, array $fields, string $pdf_name)
     {
-        $this->csv_file = $csv_file;
+        $this->data_table = $data_table;
         $this->fields = $fields;
         $this->pdf_name = $pdf_name;
 
-        $this->number_of_rows = sizeof($this->csv_file);
+        $this->number_of_rows = sizeof($this->data_table);
 
-        $this->pdf = new Mpdf([
+        // https://mpdf.github.io/reference/mpdf-variables/overview.html
+        $this->pdf = new PdfMaker([
             'orientation' => 'P',
             'margin_top' => 30
         ]);
@@ -69,25 +72,24 @@ class Pdf
         $this->pdf->autoScriptToLang = true;
         $this->pdf->autoLangToFont = true;
         $this->pdf->SetDirectionality('ltr');
-        $this->pdf->setFooter('{PAGENO}');
 
-        $this->render();
-        $this->setPdfMeta();
-        // Dump file
         $output_name = self::$output_folder . "/" . $this->pdf_name;
-        $this->pdf->Output($output_name, 'F');
+
+        $this
+            ->setPdfMeta()
+            ->SetPdfLayout($this->pdf_name)
+            ->render()
+            ->pdf->Output($output_name, 'F');
+
         echo $output_name . PHP_EOL;
     }
 
-    protected function render()
+    protected function render(): Pdf
     {
         $template = file_get_contents(Self::$template_html_path);
+        $stylesheet = file_get_contents(Self::$template_css_path);
 
-        // Write the stylesheet
-        $pdf_style = file_get_contents(Self::$template_css_path);
-        $this->pdf->WriteHTML($pdf_style, 1); // The parameter 1 tells mPDF that this is CSS and not HTML
-
-        $this->pdf->SetHTMLHeader($this->pdf_name);
+        $this->WriteCSS($stylesheet);
 
         // Preparing for bulk replace
         $all_possible_patterns =  array_map(
@@ -96,16 +98,45 @@ class Pdf
         );
 
         for ($i = 0; $i < $this->number_of_rows; $i++) {
-            $all_row_data = $this->csv_file[$i];
+            $all_row_data = $this->data_table[$i];
 
             // Bulk replace: an array of strings(pattenrs) replaced with an array of strings(data)
             $substituted_text = str_replace($all_possible_patterns, $all_row_data, $template);
 
             // Writting the card
-            $this->pdf->WriteHTML($substituted_text, 2);
-
-            $this->checkForAddingNewPage($i);
+            $this->WriteHTML($substituted_text)
+                ->checkForAddingNewPage($i);
         }
+
+        return $this;
+    }
+
+    /**
+     * @return $this
+     */
+    protected function SetPdfLayout(string $page_header): Pdf
+    {
+        $this->pdf->SetHTMLHeader($page_header);
+        $this->pdf->setFooter('{PAGENO}');
+        return $this;
+    }
+
+    /**
+     * @return $this
+     */
+    protected function WriteHTML(string $html): Pdf
+    {
+        $this->pdf->WriteHTML($html, 2);
+        return $this;
+    }
+
+    /**
+     * @return $this
+     */
+    protected function WriteCSS(string $css): Pdf
+    {
+        $this->pdf->WriteHTML($css, 1); // The parameter 1 tells mPDF that this is CSS and not HTML
+        return $this;
     }
 
     protected function checkForAddingNewPage($iteration): void
@@ -119,12 +150,17 @@ class Pdf
         }
     }
 
-    protected function setPdfMeta(): void
+    /**
+     * @return $this
+     */
+    protected function setPdfMeta(): Pdf
     {
         $this->pdf->SetTitle("Cards");
         $this->pdf->SetAuthor(base64_decode('Qm91ZG91bWEgTW9oYW1lZCBJbGllcw=='));
         $this->pdf->SetCreator(base64_decode('aHR0cHM6Ly9naXRodWIuY29tL21lZGlsaWVz'));
         $this->pdf->SetSubject("pdf cards");
         $this->pdf->SetKeywords("pdf,cards");
+
+        return $this;
     }
 }

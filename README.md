@@ -105,13 +105,14 @@ In the following example we have a spreadsheet which contains a computers invent
 
 ## BUGS
 
-~~One white space is being prepended the first key of the CSV when parsing it!~~
-
--   Fixed by using the **PhpSpreadsheet** library instead of [the custom CSV parser](https://github.com/medilies/sheet2pdf/commit/536978593a4fa6ec28b265f0c19526a7363021ec#diff-9aaba009e17d6fe971f53cd683e9e617e9bcbf94d7e053ed0d60480d27c2d7baL73)
+-   ~~One white space is being prepended the first key of the CSV when parsing it!~~
+    > Fixed by using the **PhpSpreadsheet** library instead of [the custom CSV parser](https://github.com/medilies/sheet2pdf/commit/536978593a4fa6ec28b265f0c19526a7363021ec#diff-9aaba009e17d6fe971f53cd683e9e617e9bcbf94d7e053ed0d60480d27c2d7baL73)
 
 ## TODO
 
 -   Extend the `%VAR_%` feature. For exmaple:
     -   `%UPPER_str%` will apply `strtoupper()` on `str`.
     -   `%DATE_date:FORMAT%` will allow formating date.
--   Use the **mikehaertl/phpwkhtmltopdf** library instead of **Mpdf**
+-   Use the **mikehaertl/phpwkhtmltopdf** library instead of **mPDF**
+    > Testing: Till now didn't see too much improvment comparing to **mpPDF**
+-   Try PDF templates instead of HTML templates

@@ -8,6 +8,8 @@ use PhpOffice\PhpSpreadsheet\Reader\Ods;
 use PhpOffice\PhpSpreadsheet\Reader\Xlsx;
 
 /**
+ * PhpSpreadsheet library wrapper
+ * 
  * Manages the data
  * 
  * @author Boudouma Mohamed Ilies <medilies.contact@gmail.com>
