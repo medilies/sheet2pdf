@@ -48,14 +48,14 @@ The **CSV** looks like:
 The generated **PDF** will look like:
 
 <div align="center">
-    <img src="./example/example_data-2021-Nov-27-15-25-55.png" alt="Generated PDF first page" height="600" />
+    <img src="./example/example_data-2021-Nov-27-15-25-55.png" alt="Generated PDF first page" height="800" />
 </div>
 
 ### Usage steps
 
 1. We must have  an **HTML** file which will serve as a template for generating the PDF cards. The **HTML** code must contain only the `<body>` tags.
 2. We need to map the columns from the **CSV** to the **HTML template** using the following special syntax `%VAR_column_name%`.
-> For example the `computer_name` column from the **CSV** will be refenced as `%VAR_computer_name%` in the **HTML template**:
+> For example the `computer_name` column from the **CSV** will be refenced as `%VAR_computer_name%` in the **HTML template**.
 3. We can use **CSS** to style the template (The stylesheet name **MUST** match the HTML file name).
 4. We execute the CLI command with the path of the mentionned files.
 
