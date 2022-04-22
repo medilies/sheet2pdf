@@ -48,7 +48,7 @@ The **CSV** looks like:
 The generated **PDF** will look like:
 
 <div align="center">
-    <img src="./example/example_data-2021-Nov-27-15-25-55.png" alt="Generated PDF first page" height="600" />
+    <img src="./example/example_data-2021-Nov-27-15-25-55.png" alt="Generated PDF first page" height="800" />
 </div>
 
 ### Usage steps
