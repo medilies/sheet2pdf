@@ -90,7 +90,8 @@ Our template will be named `example.html` and will look like:
 <hr />
 ```
 
-We will add a **CSS** file named `example.css` next the `example.html` to give `borders`, `padding` and `margin` to the table cells.
+We will add a **CSS** file named `example.css` next the `example.html`.
+
 ```css
 table,
 th,
@@ -116,10 +117,10 @@ php .\sheet2pdf.php .\example\example_data.csv .\example\example.html 2
 
 Cammand explanation
 
+- The 1st argument **.\example\example_data.csv** is the relative path to the **data source**.
+- The 2nd argument **.\example\example.html** is the relative path to the **template**.
+- The 3rd argument **2** tells the program to generate a maximum of two **cards per page**.
 - A **-o** option is omitted, so the PDF will be outputed next the **CSV** file, otherwise the **PDF** will be outputed in the specified location.
-- The first argument **.\example\example_data.csv** is the relative path to the data source.
-- The second argument **.\example\example.html** is the relative path to the template.
-- The third argument **2** tells the program to generate a maximum of two cards per page.
 
 ## NOTE
 
