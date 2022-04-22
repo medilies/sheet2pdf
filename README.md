@@ -1,107 +1,130 @@
 # SHEET2PDF
+This is a command line tool that reads rows of data from **CSV**, **XLSX** or **ODS** spreadsheet files and generates **PDF** files with data cards for each row.
 
-Supports **.csv**, **.xlsx** and **.ods** spreadsheet files.
+## System requirements
 
-## Env setup
+1. Having **PHP** installed on your system.
+2. Enabling the `gd` and `mbstring` **PHP extensions** ([**mPDF** library](https://mpdf.github.io/about-mpdf/requirements-v7.html) dependancies).
+3. Having **Composer** installed on your system if you want to clone the project instead of using the releases.
 
-1. Enable the `gd` and `mbstring` extensions for the [**mPDF** library](https://mpdf.github.io/about-mpdf/requirements-v7.html).
+## Setup
+Run:
+```text
+git clone https://github.com/medilies/sheet2pdf
+```
 
-2. [May be optional] Other requirements for the **PhpSpreadsheet** library can be found [here](https://github.com/PHPOffice/PhpSpreadsheet/blob/d5825a66822ce97d7d71478130b2f2b80f01a509/composer.json#L54) .
+```text
+cd ./sheet2pdf
+```
 
-3. [May be optional] Run:
+```text
+composer install
+```
 
-    ```text
-    composer install
-    ```
+## TUTORIAL
 
-    (Optional if the vendor file is already present).
+### Overview
 
-## Usage example
+In the following example we have a spreadsheet `example_data.csv` which contains computers inventory.
 
-In the following example we have a spreadsheet which contains a computers inventory. We need to create and print little cards to stick them in the back of each computer.
+We need to create and print little cards to stick them in the back of each computer.
 
-1. The inventory sheet is `example_data.csv`:
+The **CSV** looks like:
 
-    | id  | computer_name | owner    | location_department | aquisition_date | cpu    | ram   | disk_size |
-    | --- | ------------- | -------- | ------------------- | --------------- | ------ | ----- | --------- |
-    | 1   | AIO1          | Mohamed  | Administration      | 01-01-18        | I3     | 4GB   | 200GB     |
-    | 2   | AIO2          | Omar     | Administration      | 02-01-18        | I3     | 4GB   | 200GB     |
-    | 3   | AIO3          | Othman   | Administration      | 03-01-18        | I3     | 4GB   | 200GB     |
-    | 4   | AIO4          | Abubakar | Administration      | 04-01-18        | I3     | 4GB   | 200GB     |
-    | 5   | AIO5          | Nadir    | Communication       | 05-01-18        | I3     | 4GB   | 200GB     |
-    | 6   | Laptop1       | Sofiane  | Finance             | 05-06-20        | I3     | 4GB   | 200GB     |
-    | 7   | Laptop2       | Ilies    | IT                  | 06-06-20        | Ryzen5 | 16GB  | 1TB       |
-    | 8   | Laptop3       | Islam    | IT                  | 07-06-20        | Ryzen5 | 16GB  | 1TB       |
-    | 9   | SERVER        | none     | IT                  | 01-01-21        | Xeon   | 128GB | 64TB      |
+  | id  | computer_name | owner    | location_department | aquisition_date | cpu    | ram   | disk_size |
+  | --- | ------------- | -------- | ------------------- | --------------- | ------ | ----- | --------- |
+  | 1   | AIO1          | Mohamed  | Administration      | 01-01-18        | I3     | 4GB   | 200GB     |
+  | 2   | AIO2          | Omar     | Administration      | 02-01-18        | I3     | 4GB   | 200GB |
+  | 3   | AIO3          | Othman   | Administration      | 03-01-18        | I3     | 4GB   | 200GB     |
+  | 4   | AIO4          | Abubakar | Administration      | 04-01-18        | I3     | 4GB   | 200GB     |
+  | 5   | AIO5          | Nadir    | Communication       | 05-01-18        | I3     | 4GB   | 200GB     |
+  | 6   | Laptop1       | Sofiane  | Finance             | 05-06-20        | I3     | 4GB   | 200GB     |
+  | 7   | Laptop2       | Ilies    | IT                  | 06-06-20        | Ryzen5 | 16GB  | 1TB       |
+  | 8   | Laptop3       | Islam    | IT                  | 07-06-20        | Ryzen5 | 16GB  | 1TB       |
+  | 9   | SERVER        | none     | IT                  | 01-01-21        | Xeon   | 128GB | 64TB      |
 
-2. Create an HTML template which contains only the body tags. `example.html` will be used for this example.
-3. Refer to the CSV columns keys in the HTML as `%VAR_<key_name>%`. For example the `id` column from the CSV will be refenced as `%VAR_id%` in the HTML template:
+### Results preview
 
-    ```html
-    <p>
-        Lorem ipsum dolor sit amet consectetur adipisicing elit. Non, omnis
-        facere a recusandae explicabo quam illum aperiam deleniti autem saepe
-        eius possimus officia optio beatae est ratione quibusdam distinctio.
-        Reprehenderit?
-    </p>
-    <h1>%VAR_computer_name%</h1>
-    <p>Owner: %VAR_owner%</p>
-    <p>Department: %VAR_location_department%</p>
-    <table>
-        <tr>
-            <td>Aquisition Date</td>
-            <td>CPU</td>
-            <td>RAM</td>
-            <td>Storage</td>
-        </tr>
-        <tr>
-            <td>%VAR_aquisition_date%</td>
-            <td>%VAR_cpu%</td>
-            <td>%VAR_ram%</td>
-            <td>%VAR_disk_size%</td>
-        </tr>
-    </table>
-    <hr />
-    ```
-
-4. Style your template in `example.css`. (Stylesheet name **MUST** match the HTML file name).
-
-    ```css
-    table,
-    th,
-    td {
-        border: 1px solid black;
-        border-collapse: collapse;
-    }
-
-    td {
-        padding: 4px 8px;
-    }
-
-    hr {
-        margin: 16px 0;
-    }
-    ```
-
-5. Generate the PDF with:
-
-    ```text
-    php .\sheet2pdf.php .\example\example_data.csv .\example\example.html 2
-    ```
-
-    - A **-o** option is omitted, so the PDF will be outputed next the CSV file, otherwise the PDF will be outputed in the specified location.
-    - The first argument **.\example\example_data.csv** is the relative path to the data source.
-    - The second argument **.\example\example.html** is the relative path to the template.
-    - The third argument **2** tells the program to generate a maximum of two cards per pdf page.
+The generated **PDF** will look like:
 
 <div align="center">
     <img src="./example/example_data-2021-Nov-27-15-25-55.png" alt="Generated PDF first page" height="600" />
 </div>
 
+### Usage steps
+
+1. We must have  an **HTML** file which will serve as a template for generating the PDF cards. The **HTML** code must contain only the `<body>` tags.
+2. We need to map the columns from the **CSV** to the **HTML template** using the following special syntax `%VAR_column_name%`.
+> For example the `computer_name` column from the **CSV** will be refenced as `%VAR_computer_name%` in the **HTML template**:
+3. We can use **CSS** to style the template (The stylesheet name **MUST** match the HTML file name).
+4. We execute the CLI command with the path of the mentionned files.
+
+### Executing the steps
+
+Our template will be named `example.html` and will look like:
+
+```html
+<p>
+    Lorem ipsum dolor sit amet consectetur adipisicing elit. Non, omnis
+    facere a recusandae explicabo quam illum aperiam deleniti autem saepe
+    eius possimus officia optio beatae est ratione quibu sdam distinctio.
+    Reprehenderit?
+</p>
+<h1>%VAR_computer_name%</h1>
+<p>Owner: %VAR_owner%</p>
+<p>Department: %VAR_location_department%</p>
+<table>
+    <tr>
+        <td>Aquisition Date</td>
+        <td>CPU</td>
+        <td>RAM</td>
+        <td>Storage</td>
+    </tr>
+    <tr>
+        <td>%VAR_aquisition_date%</td>
+        <td>%VAR_cpu%</td>
+        <td>%VAR_ram%</td>
+        <td>%VAR_disk_size%</td>
+    </tr>
+</table>
+<hr />
+```
+
+We will add a **CSS** file named `example.css` next the `example.html` to give `borders`, `padding` and `margin` to the table cells.
+```css
+table,
+th,
+td {
+    border: 1px solid black;
+    border-collapse: collapse;
+}
+
+td {
+    padding: 4px 8px;
+}
+
+hr {
+    margin: 16px 0;
+}
+```
+
+Finally, knowing that all the mentionned files are in the same directory, generate the **PDF** with:
+
+```text
+php .\sheet2pdf.php .\example\example_data.csv .\example\example.html 2
+```
+
+Cammand explanation
+
+- A **-o** option is omitted, so the PDF will be outputed next the **CSV** file, otherwise the **PDF** will be outputed in the specified location.
+- The first argument **.\example\example_data.csv** is the relative path to the data source.
+- The second argument **.\example\example.html** is the relative path to the template.
+- The third argument **2** tells the program to generate a maximum of two cards per page.
+
 ## NOTE
 
 1. Knowing the library **mPDF** can help you customize the source code of this project to suit you better.
-2. You may find that the **mPDF** library is limited when it comes to trasnlating crazy styled HTML and it is the case with other alternative PHP libraries (**Fpdf**, **DOMpdf** ...), for example you cannot output PDFs with _flex_ or _grid_ displays.
+2. You may find that the **mPDF** library is limited when it comes to trasnlating crazy styled HTML and it is the case with other alternative PHP libraries (**Fpdf**, **DOMpdf** ...), for example you cannot output PDFs with _flex_ or _grid_ display.
 
 ## BUGS
 
