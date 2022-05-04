@@ -43,8 +43,13 @@ class Spreadsheet
                 continue;
             }
 
-            $this->assoc[] = array_combine($this->fields, $row);
+            $raw_row = array_map(fn ($item) => trim($item), $row);
+
+            $raw_row = array_combine($this->fields, $raw_row);
+
+            $this->assoc[] = array_filter($raw_row, fn ($v, $k) => !is_null($k) && !empty(trim($k)), ARRAY_FILTER_USE_BOTH);
         }
+        $this->fields = array_filter($this->fields, fn ($v) => !is_null($v) && !empty(trim($v)));
     }
 
     public function getAssoc()
@@ -65,6 +70,4 @@ class Spreadsheet
         }
         return true;
     }
-}
-
 }
