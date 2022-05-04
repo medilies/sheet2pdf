@@ -18,7 +18,7 @@ class Spreadsheet
 {
     private $spreadsheet;
 
-    private $assoc;
+    private $assoc = [];
     public $fields;
 
     function __construct(string $spreadsheet_real_path)
@@ -37,10 +37,14 @@ class Spreadsheet
         $this->spreadsheet = $this->spreadsheet->getActiveSheet()->toArray();
 
         $this->fields = array_shift($this->spreadsheet);
-        $this->assoc = array_map(
-            fn ($row) => array_combine($this->fields, $row),
-            $this->spreadsheet
-        );
+
+        foreach ($this->spreadsheet as  $row) {
+            if ($this->isRowOfNulls($row)) {
+                continue;
+            }
+
+            $this->assoc[] = array_combine($this->fields, $row);
+        }
     }
 
     public function getAssoc()
@@ -51,4 +55,16 @@ class Spreadsheet
     {
         return $this->fields;
     }
+
+    private function isRowOfNulls(array &$row): bool
+    {
+        foreach ($row as $cell) {
+
+            if (!is_null($cell) && !empty(trim($cell)))
+                return false;
+        }
+        return true;
+    }
+}
+
 }
