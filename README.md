@@ -1,5 +1,12 @@
 # SHEET2PDF
-This is a command line tool that reads rows of data from **CSV**, **XLSX** or **ODS** spreadsheet files and generates **PDF** files with data cards for each row.
+
+![GitHub release (latest by date)](https://img.shields.io/github/v/release/medilies/sheet2pdf)
+![GitHub all releases](https://img.shields.io/github/downloads/medilies/sheet2pdf/total)
+![GitHub Workflow Status](https://img.shields.io/github/workflow/status/medilies/sheet2pdf/run-test)
+
+![banner](https://banners.beyondco.de/Sheet2PDF.png?theme=light&packageManager=&packageName=curl+-OL+https%3A%2F%2Fgithub.com%2Fmedilies%2Fsheet2pdf%2Farchive%2Frefs%2Ftags%2F1.0.0.tar.gz&pattern=fancyRectangles&style=style_1&description=Turn+sheet+rows+to+visually+appealing+cards&md=1&showWatermark=0&fontSize=100px&images=terminal)
+
+A Command line tool that reads rows of data from **CSV**, **XLSX** or **ODS** spreadsheet files and generates **PDF** files with data cards for each row according to a given **HTML remplate**.
 
 ## System requirements
 
