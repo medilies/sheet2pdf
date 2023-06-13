@@ -1,5 +1,7 @@
 # SHEET2PDF
 
+[Abondonned]. Use [elaborate-code/row-bloom](https://github.com/elaborate-code/row-bloom)
+
 ![GitHub release (latest by date)](https://img.shields.io/github/v/release/medilies/sheet2pdf)
 ![GitHub all releases](https://img.shields.io/github/downloads/medilies/sheet2pdf/total)
 ![GitHub Workflow Status](https://img.shields.io/github/workflow/status/medilies/sheet2pdf/run-test)
